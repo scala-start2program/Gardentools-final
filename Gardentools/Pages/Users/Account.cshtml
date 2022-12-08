@@ -1,0 +1,131 @@
+﻿@page
+@model Gardentools.Pages.Users.AccountModel
+@{
+    ViewData["Title"] = "Mijn account";
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+}
+
+
+<div>
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <h3>Mijn account</h3><hr />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Me.Id" />
+                <div class="form-group">
+                    <label asp-for="Me.Email" class="control-label"></label>
+                    <input asp-for="Me.Email" class="form-control" />
+                    <span asp-validation-for="Me.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.Name" class="control-label"></label>
+                    <input asp-for="Me.Name" class="form-control" />
+                    <span asp-validation-for="Me.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.FirstName" class="control-label"></label>
+                    <input asp-for="Me.FirstName" class="form-control" />
+                    <span asp-validation-for="Me.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.Password" class="control-label"></label>
+                    <input asp-for="Me.Password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Me.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.Address" class="control-label"></label>
+                    <input asp-for="Me.Address" class="form-control" />
+                    <span asp-validation-for="Me.Address" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.PostalCode" class="control-label"></label>
+                    <input asp-for="Me.PostalCode" class="form-control" />
+                    <span asp-validation-for="Me.PostalCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.City" class="control-label"></label>
+                    <input asp-for="Me.City" class="form-control" />
+                    <span asp-validation-for="Me.City" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Me.Country" class="control-label"></label>
+                    <input asp-for="Me.Country" class="form-control" />
+                    <span asp-validation-for="Me.Country" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" asp-route-save="1" value="Save" class="btn btn-primary" />
+                </div>
+
+            </div>
+            <div class="col-md-8">
+                <h3>Mijn bestellingen</h3>
+                <hr />
+                Bestelling van
+                <select name="orderFilter" class="form-control bg-success text-white"
+                        asp-for="SelectedOrderId"
+                        asp-items="Model.AvailableOrders"
+                        onchange="this.form.submit()"></select>
+                <p>&nbsp;</p>
+                @foreach (var item in Model.OrderDetail)
+                {
+                    string imagePath = "~/images/" + (item.Article.ImagePath ?? "noimage.jpg");
+                    <p>
+                        <table class="table table-bordered">
+                            <tr>
+
+                                <td class="col-md-2">Merk : </td>
+                                <td>@Html.DisplayFor(modelItem => item.Article.Brand.BrandName) </td>
+                                <td class="col-md-4" rowspan="5">
+                                    <a href="../Articles/Details?id=@item.ArticleId"
+                                   class="btn btn-outline-secondary"
+                                        style="text-decoration:none;">
+                                        <img class="img-fluid" src="@imagePath" asp-append-version="true" />
+                                        </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Categorie : </td>
+                                <td>@Html.DisplayFor(modelItem => item.Article.Category.CategoryName) </td>
+                            </tr>
+                            <tr>
+                                <td>Artikel : </td>
+                                <td>
+                                    <a class="btn btn-outline-secondary" href="../Articles/Details?id=@item.ArticleId">
+                                        @Html.DisplayFor(modelItem => item.Article.ArticleName)
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Prijs : </td>
+                                <td>@Html.DisplayFor(modelItem => item.SalesPrice) </td>
+                            </tr>
+                            <tr>
+                                <td>Aantal : </td>
+                                <td>@Html.DisplayFor(modelItem => item.Count) </td>
+                            </tr>
+
+                        </table>
+
+                    </p>
+
+                }
+            </div>
+        </div>
+    </form>
+</div>

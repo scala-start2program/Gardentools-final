@@ -1,0 +1,145 @@
+﻿@page
+@model Gardentools.Pages.Articles.IndexModel
+
+@{
+    ViewData["Title"] = "Overzicht artikels";
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+
+}
+
+<h1>Ons aanbod</h1>
+<form method="post">
+    <div class="row">
+        <div class="col-md-4">
+            <p>Filter merken : </p>
+            <select name="brandfilter" class="form-control"
+                    asp-for="SelectedBrandId"
+                    asp-items="Model.AvailableBrands" 
+                    onchange="this.form.submit()"></select>
+        </div>
+        <div class="col-md-4">
+            <p>Filter brandstof : </p>
+            <select name="categoryfilter" class="form-control"
+                    asp-for="SelectedCategoryId"
+                    asp-items="Model.AvailableCategories" onchange="this.form.submit()"></select>
+        </div>
+    </div>
+
+    <p>&nbsp;</p>
+    <p>
+        <a style="@Model.Availability.ConfigButtonStyle" asp-page="Create" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> Nieuw artikel</a>
+    </p>
+
+
+    <hr />
+    <button type="submit" class="btn btn-light"
+            formaction="?pageIndex=@(Model.Pagination.FirstPageIndex)">
+        &lt;&lt;
+    </button>
+    <button type="submit" class="btn btn-light"
+            formaction="?pageIndex=@(Model.Pagination.PreviousPageIndex)">
+        &lt;
+    </button>
+
+
+    @foreach (int item in Model.Pagination.PageIndexes)
+    {
+        if (item == Model.Pagination.PageIndex)
+        {
+            <button type="submit" class="btn btn-primary"
+            formaction="?pageIndex=@item">
+                @((item + 1).ToString())
+            </button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-light"
+            formaction="?pageIndex=@item">
+                @((item + 1).ToString())
+            </button>
+        }
+    }
+
+    <button type="submit" class="btn btn-light"
+            formaction="?pageIndex=@(Model.Pagination.NextPageIndex)">
+        &gt;
+    </button>
+    <button type="submit" class="btn btn-light"
+            formaction="?pageIndex=@(Model.Pagination.LastPageIndex)">
+        &gt;&gt;
+    </button>
+
+</form>
+
+<hr />
+
+<div class="row">
+    @foreach (var item in Model.Articles)
+    {
+        string imagePath = "~/images/" + (item.ImagePath ?? "noimage.jpg");
+        string roundScore = item.Score.ToString("0");
+        <div class="col-6 col-lg-4 p-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3>@Html.DisplayFor(modelItem => item.Brand.BrandName)</h3>
+                    <h4>@Html.DisplayFor(modelItem => item.ArticleName)</h4>
+
+                </div>
+                <a asp-page="./Details" asp-route-id="@item.Id"
+                       asp-route-brandid="@Model.SelectedBrandId"
+                       asp-route-categoryid="@Model.SelectedCategoryId"
+                       class="btn">
+                    <div class="card-body" style="min-height:400px;">
+                        @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                        @Html.DisplayFor(modelItem => item.EnergySupply)
+                        <br />
+                        @Html.DisplayFor(modelItem => item.Price)
+                        <hr />
+                        <div class="text-center">
+                            <img class="img-fluid" src="@imagePath" asp-append-version="true" />
+                        </div>
+                        <h5>
+                            Score :
+                            @for (int i = 0; i < Int32.Parse(roundScore); i++)
+                            {
+                                <i class="fas fa-star" style="color:gold;"></i>
+                            }
+                            @for (int i = Int32.Parse(roundScore); i < 5; i++)
+                            {
+                                <i class="far fa-star" style="color:gold;"></i>
+                            }
+                        </h5>
+
+                    </div>
+                </a>
+                <div class="card-footer">
+                    <div class="btn-group btn-group-sm  float-right">
+                        <a style="@Model.Availability.ConfigButtonStyle" asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Wijzig"><i class="fas fa-pencil-alt"></i></a>
+                        <a style="@Model.Availability.ConfigButtonStyle" asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Wissen"><i class="fas fa-trash-alt"></i></a>
+                        <a asp-page="./Basket" asp-route-id="@item.Id" class="btn btn-sm btn-success" title="Toevoegen aan winkelmandje"><i class="fas fa-cart-plus"></i></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    }
+
+</div>
+
+
+

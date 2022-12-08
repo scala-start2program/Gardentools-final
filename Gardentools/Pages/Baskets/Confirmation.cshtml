@@ -1,0 +1,98 @@
+﻿@page
+@model Gardentools.Pages.Baskets.ConfirmationModel
+@{
+    ViewData["Title"] = "Mijn winkelmandje";
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+}
+
+<h1>Bestelling bevestigen</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="col-9">
+                Product
+            </th>
+            <th class="col-3">
+                Aantal in winkelmandje
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            decimal total = 0;
+        }
+        @foreach (var item in Model.Baskets)
+        {
+            string imagePath = "~/images/" + (item.Article.ImagePath ?? "noimage.jpg");
+            decimal subtotal = item.Article.Price * item.Count;
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-6">
+                            <h4>
+                                Merk : @Html.DisplayFor(modelItem => item.Article.Brand.BrandName)
+                            </h4>
+                            <h4>
+                                Artikel : @Html.DisplayFor(modelItem => item.Article.ArticleName)
+                            </h4>
+                            <h4>
+                                Categorie : @Html.DisplayFor(modelItem => item.Article.Category.CategoryName)
+                            </h4>
+                            <p>
+                                Prijs : @Html.DisplayFor(modelItem => item.Article.Price)€
+                                <br />
+                                Omschrijving : @Html.DisplayFor(modelItem => item.Article.Description)
+                                <br />
+                                Aandrijving : @Html.DisplayFor(modelItem => item.Article.EnergySupply)
+                                <br />
+                                Garantie : @Html.DisplayFor(modelItem => item.Article.Warranty) jaar
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-left">
+                                <img class="imageThumbnail" src="@imagePath" asp-append-version="true" />
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="mb-3 h4">
+                        Aantal :
+                        @Html.DisplayFor(modelItem => item.Count)
+                    </div>
+                    <div class="mb-3 h4">
+                        Subtotaal : @subtotal.ToString("€#,##0.00")
+                    </div>
+                </td>
+            </tr>
+            total += subtotal;
+        }
+    </tbody>
+</table>
+<h3>
+    Totaal winkelmandje : @total.ToString("€#,##0.00")
+</h3>
+
+<form method="post">
+    <h4>
+        <button type="submit" class="btn btn-success text-light">
+            <i class="far fa-check-circle"></i> Bestelling bevestigen
+        </button>
+    </h4>
+</form>
+

@@ -1,0 +1,94 @@
+﻿@page
+@model Gardentools.Pages.Brands.IndexModel
+
+@{
+    ViewData["Title"] = "Onze merken";
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+}
+
+<h1>Overzicht merken</h1>
+
+<p>&nbsp;</p>
+<p>
+    <a asp-page="Create" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> Nieuw merk</a>
+</p>
+<hr />
+<a asp-page="./Index"
+   asp-route-pageIndex="@Model.Pagination.FirstPageIndex"
+   class="btn btn-light">
+    &lt;&lt;
+</a>
+<a asp-page="./Index"
+   asp-route-pageIndex="@Model.Pagination.PreviousPageIndex"
+   class="btn btn-light">
+    &lt;
+</a>
+@foreach (int item in Model.Pagination.PageIndexes)
+{
+    if (item == Model.Pagination.PageIndex)
+    {
+        <a asp-page="./Index"
+   asp-route-pageIndex="@item"
+   class="btn btn-primary">
+            @((item + 1).ToString())
+        </a>
+    }
+    else
+    {
+        <a asp-page="./Index"
+   asp-route-pageIndex="@item"
+   class="btn btn-light">
+            @((item + 1).ToString())
+        </a>
+    }
+}
+<a asp-page="./Index"
+   asp-route-pageIndex="@Model.Pagination.NextPageIndex"
+   class="btn btn-light">
+    &gt;
+</a>
+<a asp-page="./Index"
+   asp-route-pageIndex="@Model.Pagination.LastPageIndex"
+   class="btn btn-light">
+    &gt;&gt;
+</a>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Brands[0].BrandName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Brands)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BrandName)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Wijzig"><i class="fas fa-pencil-alt"></i></a>
+                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Wissen"><i class="fas fa-trash-alt"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

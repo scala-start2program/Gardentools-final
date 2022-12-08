@@ -1,0 +1,303 @@
+﻿@page "{id:int?}"
+@model Gardentools.Pages.Articles.DetailsModel
+
+@{
+    ViewData["Title"] = "Detail artikel";
+    string imagePath = "~/images/" + (Model.Article.ImagePath ?? "noimage.jpg");
+    string userScore = "";
+    if (Model.Score != null)
+        userScore = Model.Score.Stars.ToString();
+    string scoreBlockStyle = "visibility: hidden; ";
+    string defaultScoreButtonStyle = "background:transparent;";
+    string userScoreButtonStyle = "background:oldlace;";
+    string selectedButtonStyle = "";
+    string myReviewStyle = "visibility: hidden; ";
+    if (Model.Score != null)
+        myReviewStyle = "visibility: visible; ";
+
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        scoreBlockStyle = "visibility: visible; ";
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+}
+
+<h1>@Html.DisplayFor(model => model.Article.Brand.BrandName)</h1>
+<h2>@Html.DisplayFor(model => model.Article.ArticleName)</h2>
+<hr />
+<div class="btn-group">
+    <a asp-page="./Details" asp-route-id="@Model.PreviousId"
+        asp-route-brandid="@Model.BrandId"
+        asp-route-categoryid="@Model.CategoryId"
+        class="btn btn-light">&lt; Vorige</a>
+    <a asp-page="./Index" class="btn btn-light"
+            asp-route-brandfilter="@Model.BrandId"
+            asp-route-categoryfilter="@Model.CategoryId">
+        Terug naar overzicht
+    </a>
+    <a asp-page="./Details" asp-route-id="@Model.NextId"
+       asp-route-brandid="@Model.BrandId"
+       asp-route-categoryid="@Model.CategoryId" 
+       class="btn btn-light">Volgende &gt;</a>
+</div>
+<hr />
+
+
+<div class="row">
+    <div class="col-6">
+        <img class="img-fluid" src="@imagePath" asp-append-version="true" />
+    </div>
+    <div class="col-6">
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.Brand)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Article.Brand.BrandName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.Category)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Article.Category.CategoryName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.ArticleName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Article.ArticleName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.Price)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Article.Price)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.Description)
+            </dt>
+            <dd class="col-sm-10">
+
+
+
+
+                @Html.DisplayFor(model => model.Article.Description)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.EnergySupply)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Article.EnergySupply)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Article.Warranty)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Article.Warranty)
+            </dd>
+            <dt class="col-sm-2 text-secondary">
+                In mandje
+            </dt>
+            <dd class="col-sm-10 h3">
+                <a asp-page="./Basket" 
+                   asp-route-id="@Model.Article.Id"
+                   asp-route-brandid="@Model.BrandId"
+                   asp-route-categoryid="@Model.CategoryId"
+                   class="btn btn-sm btn-success" title="Toevoegen aan winkelmandje"><i class="fas fa-cart-plus"></i></a>
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="form-group row">
+    <span class="col-sm-2 col-form-label font-weight-bold">Score</span>
+    <div class="col-sm-10">
+        @for (int i = 0; i < (int)Math.Round(Model.Article.Score); i++)
+        {
+            <i class="fas fa-star" style="color:gold;"></i>
+        }
+        @for (int i = (int)Math.Round(Model.Article.Score); i < 5; i++)
+        {
+            <i class="far fa-star" style="color:gold;"></i>
+        }
+        <h6>@Html.DisplayFor(model => model.ScoreCount) beoordelingen.</h6>
+    </div>
+</div>
+<div style="@scoreBlockStyle">
+    <input type="hidden" asp-for="Article.Id" />
+    <form method="post">
+        <hr />
+        <h3>Oordeel zelf : </h3>
+        <p>
+            @if (userScore == "1")
+                selectedButtonStyle = userScoreButtonStyle;
+            else
+                selectedButtonStyle = defaultScoreButtonStyle;
+            <button type="submit" asp-route-star="1"
+                    asp-route-categoryid="@Model.CategoryId"
+                    asp-route-brandid="@Model.BrandId"
+                    class="btn btn-sm  btn-light"
+                    title="1 ster : barslecht"
+                    style="@selectedButtonStyle">
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="far fa-star" style="color:lightgrey;"></i>
+                <i class="far fa-star" style="color:lightgrey;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+            </button>
+
+        </p>
+        <p>
+            @if (userScore == "2")
+                selectedButtonStyle = userScoreButtonStyle;
+            else
+                selectedButtonStyle = defaultScoreButtonStyle;
+            <button type="submit" asp-route-star="2"
+                    asp-route-categoryid="@Model.CategoryId"
+                    asp-route-brandid="@Model.BrandId"
+                    class="btn btn-sm  btn-light"
+                    title="2 sterren : niet zo goed"
+                    style="@selectedButtonStyle">
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+            </button>
+        </p>
+        <p>
+            @if (userScore == "3")
+                selectedButtonStyle = userScoreButtonStyle;
+            else
+                selectedButtonStyle = defaultScoreButtonStyle;
+            <button type="submit" asp-route-star="3"
+                    asp-route-categoryid="@Model.CategoryId"
+                    asp-route-brandid="@Model.BrandId"
+                    class="btn btn-sm  btn-light"
+                    title="3 sterren : goed"
+                    style="@selectedButtonStyle">
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+            </button>
+        </p>
+        <p>
+            @if (userScore == "4")
+                selectedButtonStyle = userScoreButtonStyle;
+            else
+                selectedButtonStyle = defaultScoreButtonStyle;
+            <button type="submit" asp-route-star="4"
+                    asp-route-categoryid="@Model.CategoryId"
+                    asp-route-brandid="@Model.BrandId"
+                    class="btn btn-sm  btn-light"
+                    title="4 sterren : zeer goed"
+                    style="@selectedButtonStyle">
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="far fa-star" style="color: lightgrey;"></i>
+            </button>
+        </p>
+        <p>
+            @if (userScore == "5")
+                selectedButtonStyle = userScoreButtonStyle;
+            else
+                selectedButtonStyle = defaultScoreButtonStyle;
+            <button type="submit" asp-route-star="5"
+                    asp-route-categoryid="@Model.CategoryId"
+                    asp-route-brandid="@Model.BrandId"
+                    class="btn btn-sm  btn-light"
+                    title="5 sterren : uitstekend"
+                    style="@selectedButtonStyle">
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+                <i class="fas fa-star" style="color:gold;"></i>
+            </button>
+        </p>
+        <hr />
+        <div style="@myReviewStyle">
+            <h3>Mijn review : </h3>
+            <div class="row">
+                <div class="col-sm-10">
+                    <textarea name="scoreComment" class="form-control" rows="5"></textarea>
+                </div>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-lg btn-info"
+                            asp-route-savecomment="1" 
+                            asp-route-categoryid="@Model.CategoryId"
+                            asp-route-brandid="@Model.BrandId">
+                        <i class="far fa-save" style="font-size:18pt;"></i>
+                    </button>
+                    <button type="submit" class="btn btn-lg btn-danger"
+                            asp-route-savecomment="-1"
+                            asp-route-categoryid="@Model.CategoryId"
+                            asp-route-brandid="@Model.BrandId">
+                        <i class="fas fa-trash-alt" style="font-size:18pt;"></i>
+                    </button>
+                </div>
+            </div>
+            <hr />
+        </div>
+        <h3>Wat anderen vonden : </h3>
+        <div class="row">
+            <table class="table">
+                <tbody>
+                    @foreach (var item in Model.Reviews)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.User.FirstName)
+                                &nbsp;
+                                @Html.DisplayFor(modelItem => item.User.Name)
+                            </td>
+                            <td>
+                                stars
+
+                                @for (int i = 0; i < item.Stars; i++)
+                                {
+                                    <i class="fas fa-star" style="color:gold;"></i>
+                                }
+                                @for (int i = item.Stars; i < 5; i++)
+                                {
+                                    <i class="far fa-star" style="color:gold;"></i>
+                                }
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Comment)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+<div>
+    <div class="btn-group">
+        <a style="@Model.Availability.ConfigButtonStyle" asp-page="./Edit" asp-route-id="@Model.Article.Id" class="btn  btn-warning" title="Wijzigen">
+            <i class="fas fa-pencil-alt"></i>
+        </a>
+    </div>
+</div>

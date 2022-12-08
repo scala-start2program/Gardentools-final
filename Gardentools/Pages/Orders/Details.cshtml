@@ -1,0 +1,88 @@
+﻿@page
+@model Gardentools.Pages.Orders.DetailsModel
+
+@{
+    ViewData["Title"] = "Bestellingen";
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+    decimal orderTotal = 0m;
+
+}
+
+<h1>Details bestelling</h1>
+<div>
+    <a asp-page="./Index" class="btn btn-secondary">Terug naar overzicht</a>
+</div>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Klantnaam :
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Order.User.Name) @Html.DisplayFor(model => model.Order.User.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            Adres :
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Order.User.Address) <br />
+            @Html.DisplayFor(model => model.Order.User.PostalCode) @Html.DisplayFor(model => model.Order.User.City) <br />
+            @Html.DisplayFor(model => model.Order.User.Country) <br />
+
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Order.DateTimeStamp)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Order.DateTimeStamp)
+        </dd>
+    </dl>
+</div>
+<hr />
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <td>Aantal</td>
+            <td>Merk</td>
+            <td>Artikelnaam</td>
+            <td>Prijs</td>
+            <td>Totaal</td>
+        </tr>
+    </thead>
+    @foreach (var item in Model.OrderDetail)
+    {
+        decimal total = item.SalesPrice * item.Count;
+        orderTotal += total;
+        <tr>
+            <td style="text-align:right;">@Html.DisplayFor(modelitem=> item.Count)</td>
+            <td>@Html.DisplayFor(modelitem=> item.Article.Brand.BrandName)</td>
+            <td>@Html.DisplayFor(modelitem=> item.Article.ArticleName)</td>
+            <td style="text-align:right;">@Html.DisplayFor(modelitem=> item.SalesPrice)</td>
+            <td style="text-align:right;">
+                € @total
+            </td>
+        </tr>
+    }
+    <tfoot>
+        <tr>
+            <td colspan="4" style="text-align:right;">Totaal bestelling</td>
+            <td style="text-align:right;"><b>€ @orderTotal</b></td>
+        </tr>
+    </tfoot>
+</table>
+<hr />
+

@@ -1,0 +1,110 @@
+﻿@page
+@model Gardentools.Pages.Articles.EditModel
+
+@{
+    ViewData["Title"] = "Een artikel wijzigen";
+    string imagePath = "~/images/" + (Model.Article.ImagePath ?? "noimage.jpg");
+    ViewData["Email"] = "";
+    ViewData["Loginstyle"] = "visibility: visible; ";
+    ViewData["Logoutstyle"] = "visibility: hidden; ";
+    ViewData["Configstyle"] = "visibility: hidden; ";
+    if (!string.IsNullOrEmpty(Model.Availability.Email))
+    {
+        ViewData["Email"] = Model.Availability.Email;
+        ViewData["BasketCount"] = Model.Availability.BasketCount;
+        ViewData["Loginstyle"] = "visibility: hidden; ";
+        ViewData["Logoutstyle"] = "visibility: visible; ";
+        if (Model.Availability.IsAdmin)
+        {
+            ViewData["Configstyle"] = "visibility: visible; ";
+        }
+    }
+}
+
+<h1>Een artikel wijzigen</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Article.Id" />
+            <input type="hidden" asp-for="Article.ImagePath" />
+            <div class="form-group">
+                <label asp-for="Article.BrandId" class="control-label"></label>
+                <select asp-for="Article.BrandId" class="form-control" asp-items="ViewBag.BrandId"></select>
+                <span asp-validation-for="Article.BrandId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Article.CategoryId" class="control-label"></label>
+                <select asp-for="Article.CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                <span asp-validation-for="Article.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Article.ArticleName" class="control-label"></label>
+                <input asp-for="Article.ArticleName" class="form-control" />
+                <span asp-validation-for="Article.ArticleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Article.Price" class="control-label"></label>
+                <input asp-for="Article.Price" class="form-control" />
+                <span asp-validation-for="Article.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Article.Description" class="control-label"></label>
+                <input asp-for="Article.Description" class="form-control" />
+                <span asp-validation-for="Article.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Article.EnergySupply" class="control-label"></label>
+                <select asp-for="Article.EnergySupply" class="form-control">
+                    <option value="Manueel">Manueel</option>
+                    <option value="Benzine">Benzine</option>
+                    <option value="Elektrisch">Elektrisch</option>
+                    <option value="Batterij">Batterij</option>
+                    <option value="?">n.v.t.</option>
+                </select>
+                <span asp-validation-for="Article.EnergySupply" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Article.Warranty" class="control-label"></label>
+                <input asp-for="Article.Warranty" class="form-control" />
+                <span asp-validation-for="Article.Warranty" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+
+
+@*                <label asp-for="Article.ImagePath" class="control-label"></label>
+                <input asp-for="Article.ImagePath" class="form-control" />
+                <span asp-validation-for="Article.ImagePath" class="text-danger"></span>
+                *@            
+                <p>&nbsp;</p>
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input asp-for="PhotoUpload" class="custom-file-input form-control" />
+                        <label class="custom-file-label">Klik hier om foto te wijzigen</label>
+                    </div>
+                </div>
+
+                <div class="form-group row col-sm-4 offset-4">
+                    <img class="imageThumbnail" src="@imagePath" asp-append-version="true" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="btn-group">
+                    <button type="submit" class="btn  btn-success" title="Opslaan">
+                        <i class="far fa-save"></i>
+                    </button>
+                    <a asp-page="Index" class="btn btn-danger" title="Annuleren">
+                        <i class="fas fa-undo-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
